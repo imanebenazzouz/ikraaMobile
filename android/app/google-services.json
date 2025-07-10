@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "846888223741",
+    "project_id": "ikraa-a2d87",
+    "storage_bucket": "ikraa-a2d87.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:846888223741:android:868f815dfe81fbfa260f94",
+        "android_client_info": {
+          "package_name": "com.example.ikraa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcKHmfTSVEn4xur3tOSou4gL6Kc1KxIGw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
