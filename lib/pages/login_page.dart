@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -12,52 +10,25 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   bool isLoading = false;
-  int _selectedIndex = 3; // Connexion sélectionnée par défaut
+  int _selectedIndex = 3;
 
   Future<void> _login() async {
     setState(() {
       isLoading = true;
     });
 
-    try {
-      final credential = await _auth.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
+    await Future.delayed(const Duration(seconds: 1));
 
-      final uid = credential.user?.uid;
-      if (uid != null) {
-        final doc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(uid)
-            .get();
+    // Simuler succès login (pas de vérification)
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Connexion simulée")),
+    );
 
-        final role = doc.data()?['role'];
-
-        if (role == 'student') {
-          Navigator.pushReplacementNamed(context, '/accueilStudent');
-        } else if (role == 'teacher') {
-          Navigator.pushReplacementNamed(context, '/accueilTeacher');
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Rôle inconnu. Contactez l'administration."),
-            ),
-          );
-        }
-      }
-    } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message ?? "Erreur lors de la connexion")),
-      );
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   void _goToForgotPassword() {
@@ -75,16 +46,15 @@ class _LoginPageState extends State<LoginPage> {
 
     switch (index) {
       case 0:
-        Navigator.pushNamed(context, '/home');
+        Navigator.pushNamed(context, '/acceuil');
         break;
       case 1:
-        Navigator.pushNamed(context, '/infos');
+        Navigator.pushNamed(context, '/formules');
         break;
       case 2:
         Navigator.pushNamed(context, '/contact');
         break;
       case 3:
-      // Reste sur Connexion
         break;
     }
   }
@@ -112,8 +82,6 @@ class _LoginPageState extends State<LoginPage> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 60),
-
-              // Email
               TextField(
                 controller: emailController,
                 decoration: InputDecoration(
@@ -124,8 +92,6 @@ class _LoginPageState extends State<LoginPage> {
                 keyboardType: TextInputType.emailAddress,
               ),
               const SizedBox(height: 24),
-
-              // Mot de passe
               TextField(
                 controller: passwordController,
                 decoration: InputDecoration(
@@ -136,25 +102,19 @@ class _LoginPageState extends State<LoginPage> {
                 obscureText: true,
               ),
               const SizedBox(height: 40),
-
               ElevatedButton(
                 onPressed: isLoading ? null : _login,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: blueColor,
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
                 child: isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                  "Se connecter",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
+                    : const Text("Se connecter",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               ),
-
               const SizedBox(height: 24),
-
               TextButton(
                 onPressed: _goToForgotPassword,
                 child: Text(
@@ -165,9 +125,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-
               const SizedBox(height: 8),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -189,29 +147,16 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
       ),
-
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         selectedItemColor: blueColor,
         unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Accueil',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.info),
-            label: 'Infos',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.contact_mail),
-            label: 'Contact',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.login),
-            label: 'Connexion',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Accueil'),
+          BottomNavigationBarItem(icon: Icon(Icons.info), label: 'Infos'),
+          BottomNavigationBarItem(icon: Icon(Icons.contact_mail), label: 'Contact'),
+          BottomNavigationBarItem(icon: Icon(Icons.login), label: 'Connexion'),
         ],
       ),
     );

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -12,7 +10,6 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
-
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
@@ -22,53 +19,24 @@ class _RegisterPageState extends State<RegisterPage> {
 
   String _selectedRole = 'student';
   bool _isLoading = false;
-  String? _errorMessage;
-  int _selectedIndex = 3; // Connexion sélectionnée
+  int _selectedIndex = 3;
 
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
       _isLoading = true;
-      _errorMessage = null;
     });
 
-    try {
-      final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+    await Future.delayed(const Duration(seconds: 1));
 
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(credential.user!.uid)
-          .set({
-        'firstName': _firstNameController.text.trim(),
-        'lastName': _lastNameController.text.trim(),
-        'phone': _phoneController.text.trim(),
-        'email': _emailController.text.trim(),
-        'birthDate': _birthDateController.text.trim(),
-        'role': _selectedRole,
-      });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Inscription simulée pour rôle $_selectedRole")),
+    );
 
-      if (_selectedRole == 'student') {
-        Navigator.pushReplacementNamed(context, '/accueilStudent');
-      } else {
-        Navigator.pushReplacementNamed(context, '/accueilTeacher');
-      }
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        _errorMessage = e.message ?? 'Erreur lors de l\'inscription.';
-      });
-    } catch (e) {
-      setState(() {
-        _errorMessage = "Erreur : ${e.toString()}";
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   Future<void> _pickBirthDate() async {
@@ -178,16 +146,12 @@ class _RegisterPageState extends State<RegisterPage> {
                   },
                 ),
                 const SizedBox(height: 24),
-                if (_errorMessage != null)
-                  Text(_errorMessage!, style: const TextStyle(color: Colors.red)),
                 ElevatedButton(
                   onPressed: _isLoading ? null : _register,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: blueColor,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
                   child: _isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
@@ -205,22 +169,10 @@ class _RegisterPageState extends State<RegisterPage> {
         unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Accueil',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.info),
-            label: 'Infos',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.contact_mail),
-            label: 'Contact',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.login),
-            label: 'Connexion',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Accueil'),
+          BottomNavigationBarItem(icon: Icon(Icons.info), label: 'Infos'),
+          BottomNavigationBarItem(icon: Icon(Icons.contact_mail), label: 'Contact'),
+          BottomNavigationBarItem(icon: Icon(Icons.login), label: 'Connexion'),
         ],
       ),
     );
