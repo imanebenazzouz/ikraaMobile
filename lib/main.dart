@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ikraa/pages/accueil_login_student.dart';
 import 'package:ikraa/pages/accueil_login_teacher.dart';
 import 'package:ikraa/pages/forgot_password_page.dart';
@@ -8,7 +9,9 @@ import 'pages/contact_page.dart';
 import 'pages/login_page.dart';
 import 'pages/register_page.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env"); // ✅ Charge les variables d’environnement
   runApp(const IkraaApp());
 }
 
